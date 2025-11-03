@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>CSS Program — With Accounts</title>
+<style>
+:root{
+  --bg:#0f1724; --card:#0b1220; --muted:#94a3b8; --accent:#60a5fa;
+  --glass: rgba(255,255,255,0.06); --success:#34d399; --danger:#fb7185;
+  --radius:14px; --gap:16px; --fw-regular:400; --fw-medium:600; --fw-bold:700;
+  color-scheme: dark;
+}
+:root[data-theme="light"]{
+  --bg:#f6f8fb; --card:#ffffff; --muted:#475569; --accent:#2563eb;
+  --glass: rgba(2,6,23,0.03); color-scheme: light; --radius:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family: "Segoe UI", Tahoma, system-ui, -apple-system, "Helvetica Neue", Arial;
+  background:
+    radial-gradient(800px 500px at 10% 10%, rgba(96,165,250,0.06), transparent 8%),
+    radial-gradient(600px 400px at 90% 90%, rgba(52,211,153,0.03), transparent 6%),
+    var(--bg);
+  color: #e6eef8;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  padding:28px; display:flex;align-items:center;justify-content:center;
+  transition:background .25s ease,color .25s ease;
+}
+
+/* Layout */
+.container{width:min(1100px,96vw);display:grid;grid-template-columns:1fr 360px;gap:var(--gap);align-items:start}
+
+/* Panel */
+.panel{
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:calc(var(--radius) - 4px); padding:20px;
+  box-shadow:0 6px 30px rgba(2,6,23,0.06), inset 0 1px 0 rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.03);
+  transition:transform .18s, box-shadow .18s, background .25s;
+}
+
+/* Header */
+.header{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+.logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:var(--fw-bold);font-size:20px;color:white;box-shadow:0 6px 18px rgba(96,165,250,0.12)}
+.hgroup h1{font-size:18px;font-weight:700}
+.hgroup p{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* Search + controls */
+.controls{display:flex;gap:8px;align-items:center;margin:12px 0 18px 0}
+.search{flex:1;display:flex;gap:8px}
+.search input{flex:1;padding:10px 12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:var(--glass);outline:none;color:inherit;font-size:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+.search button{padding:10px 14px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),#3b82f6);color:white;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(59,130,246,0.12)}
+.toggle{padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;cursor:pointer;font-weight:600;font-size:13px}
+
+/* Grid of feature cards */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:8px}
+.card .title{font-weight:600;font-size:14px}
+.card .meta{font-size:12px;color:var(--muted)}
+
+/* Preview area */
+.content{margin-top:18px;display:flex;gap:12px;align-items:flex-start}
+.preview{flex:1;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0));border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.025)}
+.preview h2{font-size:16px;margin-bottom:8px}
+.preview p{color:var(--muted);font-size:13px;line-height:1.5}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;border:0;font-weight:600;cursor:pointer;background:linear-gradient(90deg,var(--accent),#3b82f6);color:white;box-shadow:0 10px 30px rgba(59,130,246,0.12)}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);box-shadow:none}
+
+/* Sidebar */
+.sidebar{position:sticky;top:32px}
+.profile{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.avatar{width:64px;height:64px;border-radius:12px;background:linear-gradient(180deg,#1f2937,#111827);display:flex;align-items:center;justify-content:center;font-weight:700;border:1px solid rgba(255,255,255,0.03)}
+.stats{display:flex;gap:10px;flex-direction:column}
+.stat{font-size:13px;color:var(--muted)}
+.kv{font-weight:700;color:white}
+
+/* list */
+.list{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.item{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0));border:1px solid rgba(255,255,255,0.02)}
+.item .left{display:flex;gap:10px;align-items:center}
+.badge{padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.03);font-weight:600;font-size:13px}
+
+/* responsive */
+@media (max-width:980px){.container{grid-template-columns:1fr}.sidebar{position:static;order:3}}
+
+/* interactions */
+.card,.item,.btn{transition:transform .18s cubic-bezier(.2,.9,.3,1),box-shadow .18s}
+.card:hover,.item:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(2,6,23,0.06)}
+.btn:active{transform:translateY(2px)}
+
+/* small utilities */
+.row{display:flex;gap:12px;align-items:center}
+.center{display:flex;align-items:center;justify-content:center}
+.px{padding-left:12px;padding-right:12px}
+.table{width:100%;border-collapse:collapse;margin-top:8px}
+.table th,.table td{padding:10px 12px;text-align:left;font-size:13px;border-bottom:1px dashed rgba(255,255,255,0.03);color:var(--muted)}
+.table th{font-weight:600;color:#dbeafe}
+.form-row{display:flex;gap:8px}
+.input{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
+select.input{appearance:none;padding-right:28px}
+:focus{outline:2px solid rgba(96,165,250,0.14);outline-offset:2px;border-radius:8px}
+
+/* subtle entrance */
+@keyframes floatIn { from {opacity:0; transform: translateY(8px) scale(.995);} to {opacity:1; transform:none;} }
+.panel{animation: floatIn .45s ease both}
+
+/* modal */
+.modal-back{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;align-items:center;justify-content:center;z-index:999}
+.modal{width:420px;max-width:94vw;background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.small-muted{font-size:12px;color:var(--muted)}
+.row-between{display:flex;justify-content:space-between;align-items:center}
+.pw-toggle{cursor:pointer;font-size:13px;padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent}
+.pw-meter{height:8px;border-radius:6px;background:rgba(255,255,255,0.03);overflow:hidden}
+.pw-meter > i{display:block;height:100%;width:0%;}
+.pw-weak{background:#fb7185}
+.pw-medium{background:#f59e0b}
+.pw-strong{background:#34d399}
+.small-btn{font-size:13px;padding:8px 10px;border-radius:8px;border:0;cursor:pointer}
+.link-like{background:transparent;border:0;color:var(--accent);cursor:pointer;font-weight:600}
+.account-actions{display:flex;gap:8px;align-items:center}
+.hidden{display:none}
+</style>
+</head>
+<body data-theme="dark">
+  <div class="container" id="appRoot">
+    <div class="panel" id="mainPanel">
+      <div class="header">
+        <div class="logo">CSS</div>
+        <div class="hgroup">
+          <h1>CSS Program — تعديل</h1>
+          <p id="subtitle">قمت باضافة نظام حسابات وخيارات تفاعلية</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="search">
+          <input id="search" placeholder="ابحث في المكونات أو الحسابات — اكتب هنا..." />
+          <button id="doSearch">بحث</button>
+        </div>
+        <button id="themeToggle" class="toggle" aria-pressed="false">Light</button>
+        <button id="openLogin" class="toggle" aria-pressed="false">تسجيل/دخول</button>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="title">بطاقة المستخدم</div>
+          <div class="meta">اضغط "تسجيل/دخول" باش تخلق حساب أو تدخل.</div>
+        </div>
+        <div class="card">
+          <div class="title">إحصائيات</div>
+          <div class="meta" id="statText">لا حساب متصل</div>
+        </div>
+        <div class="card">
+          <div class="title">الإشعارات</div>
+          <div class="meta">آخر التنبيهات من النظام.</div>
+        </div>
+        <div class="card">
+          <div class="title">إعدادات سريعة</div>
+          <div class="meta">تبديل ثيم، وضع القراءة.</div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="preview">
+          <h2>معاينة المكون</h2>
+          <p>هذا الصندوق يوضح كيف تتصرف مكونات الواجهة عندما تضغط الأزرار أو تدخل نصًا. استعمل هذا القالب كنقطة بداية لتصميم واجهاتك.</p>
+
+          <div style="margin-top:12px" class="row">
+            <button class="btn" id="confirmBtn">تأكيد</button>
+            <button class="btn ghost" id="cancelBtn">إلغاء</button>
+          </div>
+
+          <table class="table" aria-label="بيانات">
+            <thead>
+              <tr><th>الاسم</th><th>الحالة</th><th>نسبة</th></tr>
+            </thead>
+            <tbody id="demoTableBody">
+              <tr><td>يوسف</td><td>متصل</td><td>92%</td></tr>
+              <tr><td>أحمد</td><td>غير متصل</td><td>41%</td></tr>
+            </tbody>
+          </table>
+
+          <div style="margin-top:12px" class="form-row">
+            <input class="input" id="nameInput" placeholder="اسم" />
+            <select class="input" id="selectExample"><option>اختيار</option><option>واحد</option></select>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <aside class="panel sidebar">
+      <div class="profile">
+        <div class="avatar" id="avatar">Y</div>
+        <div class="stats">
+          <div class="stat">مرحبا، <span class="kv" id="userName">يوسف</span></div>
+          <div class="stat">آخر ظهور: <span class="kv" id="lastSeen">غير متصل</span></div>
+        </div>
+      </div>
+
+      <div class="list" id="accountsList">
+        <!-- accounts injected here -->
+      </div>
+
+      <div style="margin-top:12px" class="row">
+        <button id="openRegister" class="btn ghost small-btn">حساب جديد</button>
+        <button id="logoutBtn" class="btn ghost small-btn hidden">خروج</button>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- Modal (Login / Register) -->
+  <div class="modal-back" id="modalBack">
+    <div class="modal" id="modal">
+      <div id="authArea">
+        <!-- login form -->
+        <div id="loginForm">
+          <h3>تسجيل دخول</h3>
+          <div class="form-group">
+            <label class="small-muted">اسم المستخدم</label>
+            <input id="loginUsername" class="input" placeholder="username" />
+          </div>
+          <div class="form-group">
+            <label class="small-muted">كلمة السر</label>
+            <div class="row-between">
+              <input id="loginPassword" class="input" placeholder="password" type="password" />
+              <button id="loginPwToggle" class="pw-toggle">اظهار</button>
+            </div>
+          </div>
+          <div class="form-group row-between">
+            <label><input type="checkbox" id="rememberMe" /> تذكرني</label>
+            <button id="showRegister" class="link-like">ما عنديش حساب؟</button>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button id="doLogin" class="btn">دخول</button>
+            <button id="closeModal" class="btn ghost">غلق</button>
+          </div>
+        </div>
+
+        <!-- register form -->
+        <div id="registerForm" class="hidden">
+          <h3>انشاء حساب</h3>
+          <div class="form-group">
+            <label class="small-muted">الاسم الظاهر</label>
+            <input id="regName" class="input" placeholder="مثال: يوسف" />
+          </div>
+          <div class="form-group">
+            <label class="small-muted">اسم المستخدم (يفضل لاتيني)</label>
+            <input id="regUsername" class="input" placeholder="username" />
+          </div>
+          <div class="form-group">
+            <label class="small-muted">كلمة السر</label>
+            <div class="row-between">
+              <input id="regPassword" class="input" placeholder="password" type="password" />
+              <button id="regPwToggle" class="pw-toggle">اظهار</button>
+            </div>
+            <div style="margin-top:6px" class="pw-meter"><i id="pwBar"></i></div>
+            <div class="small-muted" id="pwStrengthText">قوة كلمة السر: ضعيفة</div>
+          </div>
+          <div class="form-group">
+            <label class="small-muted">تأكيد كلمة السر</label>
+            <input id="regPassword2" class="input" placeholder="confirm password" type="password" />
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button id="doRegister" class="btn">انشاء</button>
+            <button id="showLogin" class="btn ghost">رجوع</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  // storage keys
+  const KEY_ACCOUNTS = 'cssProgramAccounts';
+  const KEY_CURRENT = 'cssProgramCurrent';
+
+  // elements
+  const body = document.body;
+  const themeToggle = document.getElementById('themeToggle');
+  const nameInput = document.getElementById('nameInput');
+  const userNameEl = document.getElementById('userName');
+  const avatar = document.getElementById('avatar');
+  const doSearchBtn = document.getElementById('doSearch');
+  const searchInput = document.getElementById('search');
+  const accountsList = document.getElementById('accountsList');
+  const statText = document.getElementById('statText');
+  const lastSeen = document.getElementById('lastSeen');
+  const confirmBtn = document.getElementById('confirmBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
+
+  // modal elements
+  const modalBack = document.getElementById('modalBack');
+  const modal = document.getElementById('modal');
+  const openLogin = document.getElementById('openLogin');
+  const openRegister = document.getElementById('openRegister');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const showRegister = document.getElementById('showRegister');
+  const showLogin = document.getElementById('showLogin');
+  const closeModal = document.getElementById('closeModal');
+
+  const loginUsername = document.getElementById('loginUsername');
+  const loginPassword = document.getElementById('loginPassword');
+  const loginPwToggle = document.getElementById('loginPwToggle');
+  const rememberMe = document.getElementById('rememberMe');
+  const doLogin = document.getElementById('doLogin');
+
+  const regName = document.getElementById('regName');
+  const regUsername = document.getElementById('regUsername');
+  const regPassword = document.getElementById('regPassword');
+  const regPassword2 = document.getElementById('regPassword2');
+  const regPwToggle = document.getElementById('regPwToggle');
+  const pwBar = document.getElementById('pwBar');
+  const pwStrengthText = document.getElementById('pwStrengthText');
+  const doRegisterBtn = document.getElementById('doRegister');
+
+  // theme
+  const storedTheme = localStorage.getItem('ui-theme');
+  if(storedTheme) body.setAttribute('data-theme', storedTheme);
+  updateToggle();
+
+  themeToggle.addEventListener('click', ()=>{
+    const current = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    body.setAttribute('data-theme', current);
+    localStorage.setItem('ui-theme', current);
+    updateToggle();
+  });
+  function updateToggle(){
+    const t = body.getAttribute('data-theme') || 'dark';
+    themeToggle.textContent = t === 'dark' ? 'Light' : 'Dark';
+    themeToggle.setAttribute('aria-pressed', t === 'light');
+    // adjust text color for light theme
+    if(t === 'light') document.body.style.color = '#0b1220';
+    else document.body.style.color = '#e6eef8';
+  }
+
+  // accounts data helpers
+  function loadAccounts(){
+    try{
+      const raw = localStorage.getItem(KEY_ACCOUNTS);
+      return raw ? JSON.parse(raw) : [];
+    }catch(e){ return []; }
+  }
+  function saveAccounts(arr){
+    localStorage.setItem(KEY_ACCOUNTS, JSON.stringify(arr));
+  }
+  function loadCurrent(){
+    try{
+      const raw = localStorage.getItem(KEY_CURRENT);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+  function saveCurrent(obj){
+    if(!obj) localStorage.removeItem(KEY_CURRENT);
+    else localStorage.setItem(KEY_CURRENT, JSON.stringify(obj));
+  }
+
+  // simple encoding for stored password (not secure; just demo)
+  function encodePw(p){ try { return btoa(p); } catch(e){ return p; } }
+  function decodePw(s){ try { return atob(s); } catch(e){ return s; } }
+
+  // render accounts list
+  function renderAccounts(filter=''){
+    const arr = loadAccounts();
+    accountsList.innerHTML = '';
+    const query = filter.trim().toLowerCase();
+    if(arr.length === 0){
+      accountsList.innerHTML = '<div class="item"><div class="left"><div class="badge">—</div><div><div style="font-weight:600">ما فماش حسابات</div><div style="font-size:12px;color:var(--muted)">انشئ حساب جديد</div></div></div><div class="kv">—</div></div>';
+      return;
+    }
+    arr.forEach(ac=>{
+      if(query){
+        const matches = (ac.display||'').toLowerCase().includes(query) || (ac.username||'').toLowerCase().includes(query);
+        if(!matches) return;
+      }
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `
+        <div class="left">
+          <div class="badge">${(ac.display||ac.username||'U').slice(0,2).toUpperCase()}</div>
+          <div>
+            <div style="font-weight:600">${ac.display || ac.username}</div>
+            <div style="font-size:12px;color:var(--muted)">@${ac.username} — ${ac.lastSeen || '—'}</div>
+          </div>
+        </div>
+        <div class="account-actions">
+          <button class="btn ghost small-btn btn-login" data-username="${ac.username}">دخول</button>
+          <button class="btn ghost small-btn btn-delete" data-username="${ac.username}">حذف</button>
+        </div>
+      `;
+      accountsList.appendChild(div);
+    });
+    // attach actions
+    document.querySelectorAll('.btn-login').forEach(b=>{
+      b.addEventListener('click', (e)=>{
+        const u = e.currentTarget.dataset.username;
+        quickLogin(u);
+      });
+    });
+    document.querySelectorAll('.btn-delete').forEach(b=>{
+      b.addEventListener('click', (e)=>{
+        const u = e.currentTarget.dataset.username;
+        if(confirm('تحب تمسح الحساب: ' + u + ' ؟')) {
+          deleteAccount(u);
+        }
+      });
+    });
+  }
+
+  function quickLogin(username){
+    const arr = loadAccounts();
+    const ac = arr.find(a=>a.username === username);
+    if(!ac){ alert('الحساب موش موجود'); return; }
+    // login without password prompt (since user clicked)
+    ac.lastSeen = 'دلوقتي';
+    saveAccounts(arr);
+    saveCurrent({username: ac.username, display: ac.display});
+    updateUIForCurrent();
+    renderAccounts(searchInput.value);
+    closeAuthModal();
+    alert('تم تسجيل الدخول كـ ' + (ac.display || ac.username));
+  }
+
+  function deleteAccount(username){
+    let arr = loadAccounts();
+    arr = arr.filter(a=>a.username !== username);
+    saveAccounts(arr);
+    const cur = loadCurrent();
+    if(cur && cur.username === username) saveCurrent(null);
+    updateUIForCurrent();
+    renderAccounts(searchInput.value);
+  }
+
+  function updateUIForCurrent(){
+    const cur = loadCurrent();
+    if(cur){
+      userNameEl.textContent = cur.display || cur.username;
+      avatar.textContent = (cur.display || cur.username || 'Y')[0].toUpperCase();
+      statText.textContent = 'حساب متصل: @' + cur.username;
+      lastSeen.textContent = 'دلوقتي';
+      logoutBtn.classList.remove('hidden');
+    } else {
+      userNameEl.textContent = 'يوسف';
+      avatar.textContent = 'Y';
+      statText.textContent = 'لا حساب متصل';
+      lastSeen.textContent = 'غير متصل';
+      logoutBtn.classList.add('hidden');
+    }
+  }
+
+  // events: name input updates current display (and saves to account if logged in)
+  nameInput.addEventListener('input', ()=>{
+    const cur = loadCurrent();
+    const val = nameInput.value || 'يوسف';
+    userNameEl.textContent = val;
+    avatar.textContent = val[0].toUpperCase();
+    if(cur){
+      let arr = loadAccounts();
+      const idx = arr.findIndex(a=>a.username === cur.username);
+      if(idx !== -1){
+        arr[idx].display = val;
+        saveAccounts(arr);
+        // also update current
+        saveCurrent({username: cur.username, display: val});
+        renderAccounts(searchInput.value);
+      }
+    }
+  });
+
+  // confirm / cancel demo buttons
+  confirmBtn.addEventListener('click', ()=>{ alert('تم التأكيد!'); });
+  cancelBtn.addEventListener('click', ()=>{ nameInput.value = ''; nameInput.dispatchEvent(new Event('input')); });
+
+  // search
+  doSearchBtn.addEventListener('click', ()=>{ renderAccounts(searchInput.value); });
+  searchInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') doSearchBtn.click(); });
+
+  // modal open/close
+  openLogin.addEventListener('click', ()=>{ openAuthModal('login'); });
+  openRegister.addEventListener('click', ()=>{ openAuthModal('register'); });
+  showRegister.addEventListener('click', ()=>{ toggleAuthForms('register'); });
+  showLogin.addEventListener('click', ()=>{ toggleAuthForms('login'); });
+  closeModal.addEventListener('click', closeAuthModal);
+  modalBack.addEventListener('click', (e)=>{ if(e.target === modalBack) closeAuthModal(); });
+
+  function openAuthModal(which='login'){
+    modalBack.style.display = 'flex';
+    toggleAuthForms(which);
+  }
+  function closeAuthModal(){
+    modalBack.style.display = 'none';
+    // clear fields
+    loginUsername.value = '';
+    loginPassword.value = '';
+    regName.value = '';
+    regUsername.value = '';
+    regPassword.value = '';
+    regPassword2.value = '';
+    updatePwMeter();
+  }
+  function toggleAuthForms(which){
+    if(which === 'login'){
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+    }else{
+      loginForm.classList.add('hidden');
+      registerForm.classList.remove('hidden');
+    }
+  }
+
+  // login logic
+  loginPwToggle.addEventListener('click', ()=>{
+    const t = loginPassword.type === 'password' ? 'text' : 'password';
+    loginPassword.type = t;
+    loginPwToggle.textContent = t === 'text' ? 'اخفاء' : 'اظهار';
+  });
+
+  doLogin.addEventListener('click', ()=>{
+    const username = loginUsername.value.trim();
+    const pw = loginPassword.value;
+    if(!username || !pw){ alert('عبي اليوزر و كلمة السر'); return; }
+    const arr = loadAccounts();
+    const ac = arr.find(a=>a.username === username);
+    if(!ac){ alert('اليوزر موش موجود'); return; }
+    if(decodePw(ac.password) !== pw){
+      alert('كلمة السر خاطئة');
+      return;
+    }
+    ac.lastSeen = 'دلوقتي';
+    saveAccounts(arr);
+    saveCurrent({username: ac.username, display: ac.display});
+    updateUIForCurrent();
+    renderAccounts(searchInput.value);
+    closeAuthModal();
+    alert('تمت عملية الدخول بنجاح');
+  });
+
+  // register logic
+  regPwToggle.addEventListener('click', ()=>{
+    const t = regPassword.type === 'password' ? 'text' : 'password';
+    regPassword.type = t;
+    regPwToggle.textContent = t === 'text' ? 'اخفاء' : 'اظهار';
+  });
+
+  regPassword.addEventListener('input', updatePwMeter);
+  function updatePwMeter(){
+    const val = regPassword.value || '';
+    const score = passwordScore(val);
+    let pct = Math.min(100, score * 20);
+    pwBar.style.width = pct + '%';
+    pwBar.className = '';
+    if(score <= 2){ pwBar.classList.add('pw-weak'); pwStrengthText.textContent = 'قوة كلمة السر: ضعيفة'; }
+    else if(score === 3){ pwBar.classList.add('pw-medium'); pwStrengthText.textContent = 'قوة كلمة السر: متوسطة'; }
+    else { pwBar.classList.add('pw-strong'); pwStrengthText.textContent = 'قوة كلمة السر: قوية'; }
+  }
+  function passwordScore(p){
+    let score = 0;
+    if(p.length >= 6) score++;
+    if(/[0-9]/.test(p)) score++;
+    if(/[a-z]/.test(p) && /[A-Z]/.test(p)) score++;
+    if(/[^A-Za-z0-9]/.test(p)) score++;
+    if(p.length >= 10) score++;
+    return score; // 0..5
+  }
+
+  doRegisterBtn.addEventListener('click', ()=>{
+    const display = regName.value.trim();
+    const username = (regUsername.value || '').trim();
+    const pw = regPassword.value || '';
+    const pw2 = regPassword2.value || '';
+
+    if(!username || !pw){ alert('عبي يوزر و كلمة السر'); return; }
+    if(pw !== pw2){ alert('التأكيد غير مطابق'); return; }
+    let arr = loadAccounts();
+    if(arr.some(a=>a.username === username)){ alert('اليوزر مستعمل من قبل'); return; }
+    const newAc = {
+      username,
+      display: display || username,
+      password: encodePw(pw),
+      createdAt: new Date().toISOString(),
+      lastSeen: 'الآن'
+    };
+    arr.push(newAc);
+    saveAccounts(arr);
+    saveCurrent({username: username, display: newAc.display});
+    updateUIForCurrent();
+    renderAccounts(searchInput.value);
+    closeAuthModal();
+    alert('تم إنشاء الحساب وتسجيل الدخول');
+  });
+
+  // logout
+  logoutBtn.addEventListener('click', ()=>{
+    if(!confirm('تحب تخرج من الحساب؟')) return;
+    saveCurrent(null);
+    updateUIForCurrent();
+  });
+
+  // quick load
+  function initDemoIfEmpty(){
+    const arr = loadAccounts();
+    if(arr.length === 0){
+      const demo = [
+        { username: 'youssef', display: 'يوسف', password: encodePw('123456'), createdAt: new Date().toISOString(), lastSeen: 'أمس' },
+        { username: 'ahmed', display: 'أحمد', password: encodePw('pass123'), createdAt: new Date().toISOString(), lastSeen: '2d' }
+      ];
+      saveAccounts(demo);
+    }
+  }
+
+  // keyboard enter for login
+  loginPassword.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') doLogin.click(); });
+  regPassword2.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') doRegisterBtn.click(); });
+
+  // initial render
+  initDemoIfEmpty();
+  renderAccounts();
+  updateUIForCurrent();
+
+  // quick-login support from URL hash (optional)
+  if(location.hash && location.hash.startsWith('#u=')){
+    const user = decodeURIComponent(location.hash.slice(3));
+    const arr = loadAccounts();
+    if(arr.some(a=>a.username === user)){
+      quickLogin(user);
+    }
+  }
+
+})();
+</script>
+</body>
+</html>
